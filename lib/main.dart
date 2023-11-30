@@ -1,10 +1,52 @@
-Future<String> fetchUserOrder() async {
-  // Imagine that this function is fetching user info from another service or database.
-  return Future.delayed(const Duration(seconds: 2), () => "Luong Nam");
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:rick_and_morty_app/models/character_model.dart';
+import 'package:rick_and_morty_app/providers/api_provider.dart';
+import 'package:rick_and_morty_app/ui/character_screen.dart';
+import 'package:rick_and_morty_app/ui/home_screen.dart';
+
+void main() {
+  runApp(const MyApp());
 }
 
-void main() async {
-  print("Dang lay du lieu");
-  final String name = await fetchUserOrder();
-  print(name);
+final GoRouter _router = GoRouter(
+  routes: [
+    GoRoute(
+        path: '/',
+        builder: (context,state) {
+          return const HomeScreen();
+        },
+      routes: [
+        GoRoute(path: 'character',
+        builder: (context,state){
+          final character =  state.extra as Character;
+          return CharacterScreen(character: character,);
+        })
+
+      ]
+
+    ),
+
+  ]
+);
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => ApiProvider(),
+      child: MaterialApp.router(
+        title: "Material App",
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          brightness: Brightness.dark,
+          useMaterial3: true,
+        ),
+        routerConfig: _router,
+      ),
+    );
+  }
 }
